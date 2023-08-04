@@ -1,0 +1,27 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    <h1>Country Information</h1>
+    <form action="/countries" method="post">
+        <label>
+            <input type="text" name="country" placeholder="Enter a country">
+        </label>
+        <button type="submit">Submit</button>
+    </form>
+
+    <!-- Return the country information or an error message -->
+    {% if countryInfo %}
+        {% if countryInfo.error %}
+            <p style="color: red">{{ countryInfo.error }}</p>
+        {% else %}
+            <h2>Country Details</h2>
+            <ul>
+                <li>Name: {{ countryInfo.name.common }}</li>
+                <li>Capital: {{ countryInfo.capital[0] }}</li>
+                <li>Region: {{ countryInfo.region }}</li>
+                <li>Population: {{ countryInfo.population }}</li>
+            </ul>
+        {% endif %}
+    {% endif %}
+
+{% endblock %}
