@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Twig\Environment;
 
 /**
- * Class CurrencyAction
+ * Class CapitalCityAction
  *
  * @package getinstance\myapp\Actions
  */
