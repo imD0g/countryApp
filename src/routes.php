@@ -2,6 +2,10 @@
 
 use getinstance\myapp\Actions\HomePageAction;
 use getinstance\myapp\Actions\CountryAction;
+use getinstance\myapp\Actions\CurrencyAction;
+use getinstance\myapp\Actions\CapitalCityAction;
+use getinstance\myapp\Actions\CallingCodeAction;
+
 use Slim\App;
 
 /**
@@ -18,4 +22,13 @@ return function (App $app) {
 
     // Country submission route
     $app->post('/countries', CountryAction::class . ':handleCountriesSubmit');
+
+    // Currency route
+    $app->get('/currency', CurrencyAction::class . ':renderCurrencyData');
+
+    // Capital City route
+    $app->get('/capitalCity', CapitalCityAction::class . ':renderCapitalCityData');
+
+    // Calling code route
+    $app->get('/callingCode', CallingCodeAction::class . ':renderCallingCodeData');
 };
