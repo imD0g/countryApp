@@ -14,13 +14,8 @@ use getinstance\myapp\Services\CountryApiService;
  */
 class CountryAction
 {
-    private CountryApiService $countryApiService;
-    private Environment $twig;
-
-    public function __construct(CountryApiService $countryApiService, Environment $twig)
+    public function __construct(private CountryApiService $countryApiService, private Environment $twig)
     {
-        $this->countryApiService = $countryApiService;
-        $this->twig = $twig;
     }
 
     /**

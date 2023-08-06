@@ -12,11 +12,8 @@ use GuzzleHttp\Exception\GuzzleException;
  */
 class CountryApiService
 {
-    private $httpClient;
-
-    public function __construct(Client $httpClient)
+    public function __construct(private Client $httpClient)
     {
-        $this->httpClient = $httpClient;
     }
 
     /**
@@ -42,7 +39,6 @@ class CountryApiService
             // Handle GuzzleException and return an error message
             return ['error' => $exception->getMessage()];
         }
-
         return null;
     }
 }
