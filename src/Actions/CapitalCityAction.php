@@ -26,8 +26,8 @@ class CapitalCityAction
      */
     public function renderCapitalCityData(Request $request, Response $response): Response
     {
-        // Render the capitalCity.twig template
-        $html = $this->twig->render('capitalCity.twig');
+        // Render the capitalcity.twig template
+        $html = $this->twig->render('capitalcity.twig');
         $response->getBody()->write($html);
         return $response;
     }

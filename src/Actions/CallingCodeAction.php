@@ -26,12 +26,10 @@ class CallingCodeAction
      */
     public function renderCallingCodeData(Request $request, Response $response): Response
     {
-        // Render the capitalCity.twig template
-        $html = $this->twig->render('callingCode.twig');
+        // Render the capitalcity.twig template
+        $html = $this->twig->render('callingcode.twig');
         $response->getBody()->write($html);
         return $response;
-
-
     }
 
 }

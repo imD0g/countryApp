@@ -27,8 +27,8 @@ return function (App $app) {
     $app->get('/currency', CurrencyAction::class . ':renderCurrencyData');
 
     // Capital City route
-    $app->get('/capitalCity', CapitalCityAction::class . ':renderCapitalCityData');
+    $app->get('/capital-city', CapitalCityAction::class . ':renderCapitalCityData');
 
     // Calling code route
-    $app->get('/callingCode', CallingCodeAction::class . ':renderCallingCodeData');
+    $app->get('/calling-code', CallingCodeAction::class . ':renderCallingCodeData');
 };
