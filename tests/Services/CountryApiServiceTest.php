@@ -1,10 +1,14 @@
 <?php
 
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Stream;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use getinstance\myapp\Services\CountryApiService;
 use GuzzleHttp\Client;
-use PHPUnit\Framework\MockObject\Exception;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
+
 
 class CountryApiServiceTest extends TestCase
 {
@@ -26,13 +30,6 @@ class CountryApiServiceTest extends TestCase
 
         // Create the mock client
         $this->mockClient = $this->createMock(Client::class);
-
-        // Create a custom mock for CountryApiService
-        // Use the mock builder to build it in a way that we can bypass doing the actual API call
-        $this->mockCountryApiService = $this->getMockBuilder(CountryApiService::class)
-            ->setConstructorArgs([$this->mockClient])
-            ->onlyMethods(['getCountryInfo'])
-            ->getMock();
     }
 
     /**
@@ -42,22 +39,93 @@ class CountryApiServiceTest extends TestCase
      */
     public function testGetCountryInfoReturnsSuccess()
     {
-        // Define expected
+        //link
         $expected = [
-            'name' => [
-                'common' => 'United Kingdom'
-            ],
-            'capital' => 'London'
+            [
+                'name' => [
+                    'common' => 'United Kingdom'
+                ],
+                'capital' => 'London'
+            ]
         ];
-        $this->mockCountryApiService->expects($this->once())
-            ->method('getCountryInfo')
-            ->with('GB')
-            ->willReturn($expected);
 
-        // Call the getCountryInfo method on the mock api call
-        $response = $this->mockCountryApiService->getCountryInfo('GB');
+        /** @var MockObject|StreamInterface $mockBody */
+        $mockBody = $this->createMock(Stream::class);
+
+        /** @var MockObject|ResponseInterface $mockResponse */
+        $mockResponse = $this->createMock(ResponseInterface::class);
+
+        $mockBody
+            ->method('getContents')
+            ->willReturn(json_encode($expected)); // Link
+
+        $mockResponse
+            ->expects($this->any())
+            ->method('getBody')
+            ->willReturn($mockBody); // Link
+
+        $this->mockClient
+            ->expects($this->once())
+            ->method('get')
+            ->willReturn($mockResponse);
+
+        $countryApiService = new CountryApiService($this->mockClient);
+        $response = $countryApiService->getCountryInfo('GB');
 
         // Assert that the response is the same as the expected
-        $this->assertEquals($expected, $response);
+        $this->assertEquals($expected[0], $response);
+    }
+
+    public function testGetCountryInfoReturnsError()
+    {
+        $errorMessage = "There was an error!";
+
+         // Here we have to test getting into the guzzle exception
+        $this->mockClient->expects($this->once())
+            ->method('get')
+            ->willThrowException(new Exception($errorMessage));
+
+        $countryApiService = new CountryApiService($this->mockClient);
+        $response = $countryApiService->getCountryInfo('....');
+
+        // Assert the response is an array
+        $this->assertIsArray($response, "Failed to assert that response was an array");
+
+        // Assert the response array contains the "error" key
+        $this->assertArrayHasKey("error", $response);
+
+        // Assert the message in the response is the same as the defined string
+        $this->assertEquals($errorMessage, $response["error"]);
+    }
+
+    public function testGetCountryInfoReturnsNull()
+    {
+        /** @var MockObject|ResponseInterface $mockResponse */
+        $mockResponse = $this->createMock(ResponseInterface::class);
+
+        /** @var MockObject|StreamInterface $mockBody */
+        $mockBody = $this->createMock(StreamInterface::class);
+
+        // Configure the mock body so it returns empty, using the getContents method
+        $mockBody
+            ->method('getContents')
+            ->willReturn(json_encode([]));
+
+        // Configure the mock response so it uses the get body method on the pre-created mockBody
+        $mockResponse
+            ->method('getBody')
+            ->willReturn($mockBody);
+
+        // Configure the mock client so it will return the mockResponse
+        $this->mockClient
+            ->expects($this->once())
+            ->method('get')
+            ->willReturn($mockResponse);
+
+        $countryApiService = new CountryApiService($this->mockClient);
+        $response = $countryApiService->getCountryInfo('NonExistentCountry');
+
+        // Assert the response is null
+        $this->assertNull($response, "Failed to assert that response was null");
     }
 }
