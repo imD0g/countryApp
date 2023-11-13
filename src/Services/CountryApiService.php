@@ -2,6 +2,7 @@
 
 namespace getinstance\myapp\Services;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
@@ -25,6 +26,7 @@ class CountryApiService
     public function getCountryInfo(string $country): ?array
     {
         try {
+
             // Make a GET request to the 'restcountries' API
             $response = $this->httpClient->get("https://restcountries.com/v3.1/name/$country");
 
@@ -35,7 +37,7 @@ class CountryApiService
             if (!empty($countryData)) {
                 return $countryData[0];
             }
-        } catch (GuzzleException $exception) {
+        } catch (Exception $exception) {
             // Handle GuzzleException and return an error message
             return ['error' => $exception->getMessage()];
         }
